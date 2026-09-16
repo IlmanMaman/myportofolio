@@ -12,12 +12,17 @@
         <button type="button" class="project-delete-modal_close" popovertarget="delete-edu-{{ edu.id }}" popovertargetaction="hide">x</button>
         <h2>Hapus Education?</h2>
         <p>Apakah Anda yakin ingin menghapus <strong>{{ edu.institution }}</strong>?</p>
-        <div class="project-delete-modal_actions">
-            <button type="button" class="button button-secondary" popovertarget="delete-edu-{{ edu.id }}" popovertargetaction="hide">Batal</button>
-            <form method="post" action="{% url 'main:delete_education' edu.id %}">
-                {% csrf_token %}
+        
+        <form method="post" action="{% url 'main:delete_education' edu.id %}">
+            {% csrf_token %}
+            <div class="form-group" style="margin: 1rem 0; text-align: left;">
+                <label for="secret_code_{{ edu.id }}">Kode Rahasia Admin:</label>
+                <input type="password" name="secret_code" id="secret_code_{{ edu.id }}" class="form-control" placeholder="Masukkan kode rahasia" required>
+            </div>
+            <div class="project-delete-modal_actions">
+                <button type="button" class="button button-secondary" popovertarget="delete-edu-{{ edu.id }}" popovertargetaction="hide">Batal</button>
                 <button type="submit" class="button button-danger">Ya, Hapus</button>
-            </form>
-        </div>
+            </div>
+        </form>
     </div>
 </div>

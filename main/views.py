@@ -1,9 +1,12 @@
+import os
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.core import serializers
 from django.http import HttpResponse
 from main.models import Experience, Education
 from main.forms import EducationForm
+
+SECRET_KEY = os.getenv("PORTFOLIO_SECRET_KEY")
 
 
 def show_main(request):
@@ -53,10 +56,17 @@ def show_education(request):
 
 def create_education(request):
     form = EducationForm(request.POST or None)
-    if request.method == "POST" and form.is_valid():
-        form.save()
-        messages.success(request, "Riwayat pendidikan berhasil ditambahkan!")
-        return redirect("main:show_education")
+    if request.method == "POST":
+        input_secret = request.headers.get("X-Secret-Code") or request.POST.get("secret_code")
+        
+        if input_secret != SECRET_KEY:
+            messages.error(request, "Kode rahasia salah! Anda tidak memiliki akses untuk menambah data.")
+            return render(request, "education_form.html", {"name": "Ilman Ghani Awliya", "form": form})
+
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Riwayat pendidikan berhasil ditambahkan!")
+            return redirect("main:show_education")
 
     context = {
         "name": "Ilman Ghani Awliya",
@@ -68,7 +78,14 @@ def create_education(request):
 def delete_education(request, education_id):
     education = get_object_or_404(Education, pk=education_id)
     if request.method == "POST":
+        input_secret = request.headers.get("X-Secret-Code") or request.POST.get("secret_code")
+        
+        if input_secret != SECRET_KEY:
+            messages.error(request, "Kode rahasia salah! Data gagal dihapus.")
+            return redirect("main:show_education")
+
         education.delete()
         messages.success(request, "Education berhasil dihapus!")
         return redirect("main:show_education")
+
     return redirect("main:show_education")

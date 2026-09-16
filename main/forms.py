@@ -1,7 +1,17 @@
 from django.forms import ModelForm, TextInput, Textarea, NumberInput, Select
 from main.models import Education
+from django import forms
 
 class EducationForm(ModelForm):
+    secret_code = form.CharField(
+        widget=forms.PasswordInput(attrs={
+            "class": "form-control",
+            "placeholder": "Masukkan Kode Admin"
+        }),
+        label="Kode Rahasia Admin",
+        required=True
+    )
+    
     class Meta:
         model = Education
         fields = ["institution", "degree", "field_of_study", "description", "start_year", "end_year"]
