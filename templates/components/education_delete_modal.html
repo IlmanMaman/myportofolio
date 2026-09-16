@@ -1,0 +1,23 @@
+<button type="button" 
+        class="button button-danger" 
+        popovertarget="delete-edu-{{ edu.id }}"
+        aria-label="Hapus {{ edu.institution }}"
+        title="Hapus education">
+    Hapus Education
+</button>
+
+<div id="delete-edu-{{ edu.id }}" class="project-delete-modal" popover="auto" role="dialog">
+    <button type="button" class="project-delete-modal_backdrop" popovertarget="delete-edu-{{ edu.id }}" popovertargetaction="hide"></button>
+    <div class="project-delete-modal_content">
+        <button type="button" class="project-delete-modal_close" popovertarget="delete-edu-{{ edu.id }}" popovertargetaction="hide">x</button>
+        <h2>Hapus Education?</h2>
+        <p>Apakah Anda yakin ingin menghapus <strong>{{ edu.institution }}</strong>?</p>
+        <div class="project-delete-modal_actions">
+            <button type="button" class="button button-secondary" popovertarget="delete-edu-{{ edu.id }}" popovertargetaction="hide">Batal</button>
+            <form method="post" action="{% url 'main:delete_education' edu.id %}">
+                {% csrf_token %}
+                <button type="submit" class="button button-danger">Ya, Hapus</button>
+            </form>
+        </div>
+    </div>
+</div>

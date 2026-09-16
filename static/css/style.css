@@ -405,3 +405,233 @@ h1, .brand {
     font-size: 0.85rem;
     font-weight: 600;
 }
+
+.project-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.button {
+    display: inline-block;
+    font-family: "Space Grotesk", -apple-system, sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-decoration: none;
+    color: var(--paper);
+    background-color: var(--ink);
+    border: 2px solid var(--ink);
+    border-radius: var(--radius);
+    padding: 0.6rem 1.25rem;
+    cursor: pointer;
+    box-shadow: 3px 3px 0px var(--accent);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+.button:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 5px 5px 0px var(--accent-dark);
+    background-color: var(--accent);
+    color: #ffffff;
+}
+
+.button-secondary {
+    background-color: #ffffff;
+    color: var(--ink);
+    box-shadow: 3px 3px 0px var(--ink);
+}
+
+.button-secondary:hover {
+    background-color: var(--paper);
+    color: var(--ink);
+    box-shadow: 5px 5px 0px var(--ink);
+}
+
+.button-danger {
+    background-color: #b42318;
+    color: #ffffff;
+    border-color: #7a150d;
+    box-shadow: 3px 3px 0px #7a150d;
+}
+
+.button-danger:hover {
+    background-color: #912018;
+    box-shadow: 5px 5px 0px var(--ink);
+}
+
+/* Form Search Filter */
+.project-search {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+}
+
+.project-search_input {
+    width: 100%;
+    min-width: 0;
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--ink);
+    border-radius: var(--radius);
+    background: #ffffff;
+    color: var(--ink);
+    font-family: inherit;
+    font-size: 0.95rem;
+    box-shadow: 3px 3px 0px var(--line);
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.project-search_input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 4px 4px 0px var(--ink);
+}
+
+/* Card Actions */
+.project-card-actions {
+    margin-top: 1rem;
+    padding-top: 0.75rem;
+    border-top: 1px dashed var(--line);
+}
+
+.project-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Form Styling (Halaman Add Education) */
+.project-form {
+    max-width: 600px;
+    margin: 1.5rem 0;
+    background: #ffffff;
+    padding: 2rem;
+    border: 2px solid var(--ink);
+    border-radius: var(--radius);
+    box-shadow: 6px 6px 0px var(--ink);
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.form-group label {
+    font-family: "Space Grotesk", -apple-system, sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--ink);
+}
+
+.form-control,
+.project-form input[type="text"],
+.project-form input[type="number"],
+.project-form select,
+.project-form textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--ink);
+    border-radius: var(--radius);
+    background-color: #ffffff;
+    color: var(--ink);
+    font-family: inherit;
+    font-size: 0.95rem;
+    box-sizing: border-box;
+    box-shadow: 3px 3px 0px var(--line);
+    transition: box-shadow 0.2s ease;
+}
+
+.form-control:focus,
+.project-form input:focus,
+.project-form select:focus,
+.project-form textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 4px 4px 0px var(--ink);
+}
+
+.form-error {
+    color: #b42318;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+/* Modal Popover Styling (Brutalist Style Pop-up) */
+.project-delete-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 1rem;
+    border: 0;
+    background: transparent;
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+}
+
+.project-delete-modal:popover-open {
+    display: flex;
+}
+
+.project-delete-modal_backdrop {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    padding: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+}
+
+.project-delete-modal_content {
+    position: relative;
+    z-index: 1;
+    width: min(100%, 460px);
+    padding: 2rem;
+    background: var(--paper);
+    border: 3px solid var(--ink);
+    border-radius: var(--radius);
+    box-shadow: 8px 8px 0px var(--ink);
+}
+
+.project-delete-modal_content h2 {
+    font-family: "Space Grotesk", -apple-system, sans-serif;
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.project-delete-modal_close {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    background: #ffffff;
+    border: 2px solid var(--ink);
+    border-radius: var(--radius);
+    width: 32px;
+    height: 32px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 2px 2px 0px var(--ink);
+}
+
+.project-delete-modal_close:hover {
+    background: var(--accent);
+    color: #ffffff;
+}
+
+.project-delete-modal_actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+}
