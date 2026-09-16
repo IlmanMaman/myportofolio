@@ -3,7 +3,7 @@ from main.models import Education
 from django import forms
 
 class EducationForm(ModelForm):
-    secret_code = form.CharField(
+    secret_code = forms.CharField(
         widget=forms.PasswordInput(attrs={
             "class": "form-control",
             "placeholder": "Masukkan Kode Admin"
@@ -11,7 +11,7 @@ class EducationForm(ModelForm):
         label="Kode Rahasia Admin",
         required=True
     )
-    
+
     class Meta:
         model = Education
         fields = ["institution", "degree", "field_of_study", "description", "start_year", "end_year"]

@@ -1,4 +1,4 @@
-import os
+import os  # <-- TAMBAHKAN INI DI BARIS PERTAMA
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.core import serializers
@@ -55,7 +55,7 @@ def show_education(request):
 
 
 def create_education(request):
-    form = EducationForm(request.POST or None)
+    form = EducationForm(request.POST or None) 
     if request.method == "POST":
         input_secret = request.headers.get("X-Secret-Code") or request.POST.get("secret_code")
         
