@@ -9,7 +9,6 @@
         <div class="container">
             <p class="section-kicker">Latar belakang pendidikan saya</p>
             
-            <!-- Header Halaman & Tombol Tambah -->
             <div class="project-header">
                 <h1>Education</h1>
                 <a href="{% url 'main:create_education' %}" class="button project-add-button">
@@ -17,7 +16,17 @@
                 </a>
             </div>
 
-            <!-- Form Search Filter -->
+            {% if messages %}
+                <div class="messages" style="margin-bottom: 1.5rem;">
+                    {% for message in messages %}
+                        <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}" 
+                             style="padding: 0.75rem 1rem; border-radius: var(--radius); background: #fee2e2; color: #991b1b; border: 2px solid #991b1b; font-weight: bold; margin-bottom: 0.5rem;">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
             <form method="get" action="{% url 'main:show_education' %}" class="project-search">
                 <input type="search" 
                        name="search" 
@@ -28,7 +37,6 @@
                 <button type="submit" class="button">Cari</button>
             </form>
 
-            <!-- Grid Kartu Education -->
             <div class="experience-grid project-grid">
                 {% for edu in education_list %}
                 <article class="experience-card">
@@ -45,7 +53,6 @@
                     </p>
                     {% endif %}
                     
-                    <!-- Aksi Hapus (Delete Modal Component) -->
                     <div class="project-card-actions">
                         <div class="project-actions">
                             {% include "components/education_delete_modal.html" with edu=edu %}

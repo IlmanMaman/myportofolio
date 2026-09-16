@@ -1,4 +1,5 @@
-import os  # <-- TAMBAHKAN INI DI BARIS PERTAMA
+import os
+from dotenv import load_dotenv
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.core import serializers
@@ -6,6 +7,7 @@ from django.http import HttpResponse
 from main.models import Experience, Education
 from main.forms import EducationForm
 
+load_dotenv()
 SECRET_KEY = os.getenv("PORTFOLIO_SECRET_KEY")
 
 
@@ -38,13 +40,11 @@ def get_education_json(request):
 
 
 def show_education(request):
-    json_response = get_education_json(request)
-    education_objects = serializers.deserialize(
-        "json",
-        json_response.content.decode("utf-8")
-    )
-    education_list = [item.object for item in education_objects]
     search_query = request.GET.get("search", "").strip()
+    education_list = Education.objects.all()
+    
+    if search_query:
+        education_list = education_list.filter(institution__icontains=search_query)
 
     context = {
         "name": "Ilman Ghani Awliya",
@@ -55,7 +55,7 @@ def show_education(request):
 
 
 def create_education(request):
-    form = EducationForm(request.POST or None) 
+    form = EducationForm(request.POST or None)
     if request.method == "POST":
         input_secret = request.headers.get("X-Secret-Code") or request.POST.get("secret_code")
         
