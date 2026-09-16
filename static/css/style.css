@@ -5,12 +5,12 @@
 }
 
 :root {
-    --ink: #1c1917;
-    --paper: #faf6f0;
-    --accent: #d95d39;
-    --accent-dark: #a8442a;
+    --ink: #000000;
+    --paper: #ffe1d7;
+    --accent: #84affb;
+    --accent-dark: #0259dd;
     --line: #e3d9c9;
-    --text-muted: #6b6459;
+    --text-muted: #767459;
     --radius: 4px;
 }
 
