@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.core import serializers
 from django.http import HttpResponse
 from main.models import Experience, Education
-from main.forms import EducationForm
+from main.forms import EducationForm, ExperienceForm
 
 load_dotenv()
 SECRET_KEY = os.getenv("PORTFOLIO_SECRET_KEY")
@@ -89,3 +89,77 @@ def delete_education(request, education_id):
         return redirect("main:show_education")
 
     return redirect("main:show_education")
+
+def show_experience(request):
+    context = {
+        "name": "Ilman Ghani Awliya",
+        "experience_list": Experience.objects.all(),
+    }
+    return render(request, "experience.html", context)
+
+
+def get_experience_json(request):
+    experience_list = Experience.objects.all()
+    return HttpResponse(serializers.serialize("json", experience_list), content_type="application/json")
+
+
+def create_experience(request):
+    form = ExperienceForm(request.POST or None)
+    if request.method == "POST":
+        input_secret = request.headers.get("X-Secret-Code") or request.POST.get("secret_code")
+        
+        if input_secret != SECRET_KEY:
+            messages.error(request, "Kode rahasia salah! Anda tidak memiliki akses untuk menambah data.")
+            return render(request, "experience_form.html", {"name": "Ilman Ghani Awliya", "form": form, "title": "Tambah Experience"})
+
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Pengalaman berhasil ditambahkan!")
+            return redirect("main:show_experience")
+
+    context = {
+        "name": "Ilman Ghani Awliya",
+        "form": form,
+        "title": "Tambah Experience",
+    }
+    return render(request, "experience_form.html", context)
+
+
+def update_experience(request, experience_id):
+    experience = get_object_or_404(Experience, pk=experience_id)
+    form = ExperienceForm(request.POST or None, instance=experience)
+
+    if request.method == "POST":
+        input_secret = request.headers.get("X-Secret-Code") or request.POST.get("secret_code")
+        
+        if input_secret != SECRET_KEY:
+            messages.error(request, "Kode rahasia salah! Anda tidak memiliki akses untuk mengubah data.")
+            return render(request, "experience_form.html", {"name": "Ilman Ghani Awliya", "form": form, "title": "Edit Experience"})
+
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Pengalaman berhasil diperbarui!")
+            return redirect("main:show_experience")
+
+    context = {
+        "name": "Ilman Ghani Awliya",
+        "form": form,
+        "title": "Edit Experience",
+    }
+    return render(request, "experience_form.html", context)
+
+
+def delete_experience(request, experience_id):
+    experience = get_object_or_404(Experience, pk=experience_id)
+    if request.method == "POST":
+        input_secret = request.headers.get("X-Secret-Code") or request.POST.get("secret_code")
+        
+        if input_secret != SECRET_KEY:
+            messages.error(request, "Kode rahasia salah! Data gagal dihapus.")
+            return redirect("main:show_experience")
+
+        experience.delete()
+        messages.success(request, "Experience berhasil dihapus!")
+        return redirect("main:show_experience")
+
+    return redirect("main:show_experience")

@@ -1,0 +1,23 @@
+<button type="button" class="button button-danger" onclick="document.getElementById('modal-delete-exp-{{ exp.id }}').showModal()" style="padding: 0.4rem 0.8rem; font-size: 0.9rem;">
+    Hapus
+</button>
+
+<dialog id="modal-delete-exp-{{ exp.id }}" class="modal">
+    <div class="modal-box" style="padding: 1.5rem; background: #fff; border: 3px solid #000; box-shadow: 4px 4px 0px #000;">
+        <h3 style="font-weight: bold; font-size: 1.2rem; margin-bottom: 0.5rem;">Konfirmasi Hapus</h3>
+        <p>Apakah Anda yakin ingin menghapus pengalaman <strong>{{ exp.title }}</strong>?</p>
+        
+        <form method="post" action="{% url 'main:delete_experience' exp.id %}" style="margin-top: 1rem;">
+            {% csrf_token %}
+            <div style="margin-bottom: 1rem;">
+                <label for="secret_code_{{ exp.id }}" style="display: block; font-weight: bold; margin-bottom: 0.3rem;">Masukkan Kode Rahasia:</label>
+                <input type="password" name="secret_code" id="secret_code_{{ exp.id }}" required style="width: 100%; padding: 0.5rem; border: 2px solid #000;">
+            </div>
+            
+            <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+                <button type="button" class="button button-secondary" onclick="document.getElementById('modal-delete-exp-{{ exp.id }}').close()">Batal</button>
+                <button type="submit" class="button button-danger">Ya, Hapus</button>
+            </div>
+        </form>
+    </div>
+</dialog>

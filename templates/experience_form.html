@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block meta %}
+<title>{{ title }} - {{ name }}</title>
+{% endblock meta %}
+
+{% block content %}
+<main class="container" style="padding-top: 2rem; padding-bottom: 2rem;">
+    <section class="experience-section">
+        <h1 style="margin-bottom: 1.5rem;">{{ title }}</h1>
+        
+        {% if messages %}
+            <div class="messages" style="margin-bottom: 1rem;">
+                {% for message in messages %}
+                    <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}" style="padding: 0.75rem 1rem; background: #fee2e2; color: #991b1b; border: 2px solid #991b1b; font-weight: bold; margin-bottom: 0.5rem;">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <form method="post" class="project-form" style="border: 3px solid #000; padding: 1.5rem; background: #fff; box-shadow: 4px 4px 0px #000; max-width: 600px;">
+            {% csrf_token %}
+            
+            {% for field in form %}
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label for="{{ field.id_for_label }}" style="display: block; font-weight: bold; margin-bottom: 0.3rem;">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                        <div class="form-error" style="color: #dc2626; font-size: 0.875rem; margin-top: 0.25rem; font-weight: bold;">{{ field.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+            <!-- Input Kode Rahasia untuk Akses Edit/Tambah -->
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label for="secret_code" style="display: block; font-weight: bold; margin-bottom: 0.3rem;">Kode Rahasia:</label>
+                <input type="password" name="secret_code" id="secret_code" required style="width: 100%; padding: 0.5rem; border: 2px solid #000;">
+            </div>
+
+            <div style="display: flex; gap: 0.75rem;">
+                <a href="{% url 'main:show_experience' %}" class="button button-secondary">Batal</a>
+                <button type="submit" class="button">Simpan</button>
+            </div>
+        </form>
+    </section>
+</main>
+{% endblock content %}

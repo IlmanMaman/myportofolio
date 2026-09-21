@@ -1,5 +1,5 @@
 from django.forms import ModelForm, TextInput, Textarea, NumberInput, Select
-from main.models import Education
+from main.models import Education, Experience
 from django import forms
 
 class EducationForm(ModelForm):
@@ -30,4 +30,12 @@ class EducationForm(ModelForm):
             "description": Textarea(attrs={"placeholder": "Deskripsi kegiatan akademis...", "rows": 3}),
             "start_year": NumberInput(attrs={"placeholder": "2025"}),
             "end_year": NumberInput(attrs={"placeholder": "2029"}),
+        }
+
+class ExperienceForm(forms.ModelForm):
+    class Meta:
+        model = Experience
+        fields = ["title", "description", "category", "thumbnail", "ended_at"]
+        widgets = {
+            'ended_at': forms.DateTimeInput(attrs={ 'type': 'datetime-local'}),
         }
