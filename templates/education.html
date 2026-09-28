@@ -55,10 +55,36 @@
                     </p>
                     {% endif %}
                     
-                    {% if user.is_superuser %}
-                    <div class="project-card-actions">
-                        <div class="project-actions">
-                            {% include "components/education_delete_modal.html" with edu=edu %}
+                    <div style="margin-top: 0.75rem;">
+                        <form action="{% url 'main:toggle_star_education' edu.id %}" method="POST" style="display: inline;">
+                            {% csrf_token %}
+                            {% if user.is_authenticated %}
+                                <button type="submit" class="button button-secondary" style="padding: 0.3rem 0.6rem; font-size: 0.85rem;">
+                                    {% if user in edu.starred_by.all %}
+                                        ★ Unstar ({{ edu.total_stars }})
+                                    {% else %}
+                                        ☆ Star ({{ edu.total_stars }})
+                                    {% endif %}
+                                </button>
+                            {% else %}
+                                <a href="{% url 'main:login' %}" class="button button-secondary" style="padding: 0.3rem 0.6rem; font-size: 0.85rem; text-decoration: none;">
+                                    ☆ Star ({{ edu.total_stars }})
+                                </a>
+                            {% endif %}
+                        </form>
+                    </div>
+
+                    {% if user.is_superuser or is_editor %}
+                    <div class="project-card-actions" style="margin-top: 1rem;">
+                        <div class="project-actions" style="display: flex; gap: 0.5rem; align-items: center;">
+                            <!-- Edit: Superuser ATAU Editor -->
+                            <a href="{% url 'main:update_education' edu.id %}" class="button button-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.9rem;">
+                                Edit
+                            </a>
+                            
+                            {% if user.is_superuser %}
+                                {% include "components/education_delete_modal.html" with edu=edu %}
+                            {% endif %}
                         </div>
                     </div>
                     {% endif %}

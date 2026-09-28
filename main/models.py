@@ -33,7 +33,7 @@ class Education(models.Model):
     DEGREE_CHOICES = [
         ('high_school', 'High School'),
         ('undergraduate', 'Undergraduate'),
-        ('postgradiate', 'Postgraduate'),
+        ('postgraduate', 'Postgraduate'), # Perbaikan typo 'postgradiate' menjadi 'postgraduate'
         ('certification', 'Certification / Course'),
     ]
 
@@ -45,9 +45,14 @@ class Education(models.Model):
     start_year = models.IntegerField()
     end_year = models.IntegerField(blank=True, null=True)
 
+    starred_by = models.ManyToManyField(User, related_name='starred_educations', blank=True)
+
     def __str__(self):
         return f"{self.get_degree_display()} at {self.institution}"
 
     @property
     def is_ongoing(self):
         return self.end_year is None
+
+    def total_stars(self):
+        return self.starred_by.count()

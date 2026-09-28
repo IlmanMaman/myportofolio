@@ -13,7 +13,6 @@
             
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
                 <h1>Experience</h1>
-                
                 {% if user.is_superuser %}
                     <a href="{% url 'main:create_experience' %}" class="button">+ Tambah Experience</a>
                 {% endif %}
@@ -49,12 +48,16 @@
                         {% include "components/experience_star.html" with exp=experience %}
                     </div>
 
-                    {% if user.is_superuser %}
+                    {% if user.is_superuser or is_editor %}
                         <div class="experience-actions" style="display: flex; gap: 0.5rem; align-items: center; margin-top: 1rem;">
+                            <!-- Edit: Superuser ATAU Editor -->
                             <a href="{% url 'main:update_experience' experience.id %}" class="button button-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.9rem;">
                                 Edit
                             </a>
-                            {% include "components/experience_delete_modal.html" with exp=experience %}
+                            
+                            {% if user.is_superuser %}
+                                {% include "components/experience_delete_modal.html" with exp=experience %}
+                            {% endif %}
                         </div>
                     {% endif %}
                 </article>
