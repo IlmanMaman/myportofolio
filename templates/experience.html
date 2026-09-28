@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block meta %}
 <title>Experience - {{ name }}</title>
@@ -12,7 +13,10 @@
             
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
                 <h1>Experience</h1>
-                <a href="{% url 'main:create_experience' %}" class="button">+ Tambah Experience</a>
+                
+                {% if user.is_superuser %}
+                    <a href="{% url 'main:create_experience' %}" class="button">+ Tambah Experience</a>
+                {% endif %}
             </div>
 
             {% if messages %}
@@ -41,12 +45,18 @@
                     <p class="experience-status">Selesai</p>
                     {% endif %}
 
-                    <div class="experience-actions" style="display: flex; gap: 0.5rem; align-items: center; margin-top: 1rem;">
-                        <a href="{% url 'main:update_experience' experience.id %}" class="button button-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.9rem;">
-                            Edit
-                        </a>
-                        {% include "components/experience_delete_modal.html" with exp=experience %}
+                    <div style="margin-top: 0.75rem;">
+                        {% include "components/experience_star.html" with exp=experience %}
                     </div>
+
+                    {% if user.is_superuser %}
+                        <div class="experience-actions" style="display: flex; gap: 0.5rem; align-items: center; margin-top: 1rem;">
+                            <a href="{% url 'main:update_experience' experience.id %}" class="button button-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.9rem;">
+                                Edit
+                            </a>
+                            {% include "components/experience_delete_modal.html" with exp=experience %}
+                        </div>
+                    {% endif %}
                 </article>
                 {% empty %}
                 <p class="empty-state">

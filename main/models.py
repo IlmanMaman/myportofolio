@@ -1,5 +1,6 @@
 import uuid
 from django.db import models
+from django.contrib.auth.models import User
 
 class Experience(models.Model):
     EXPERIENCE_CHOICES = [
@@ -25,6 +26,8 @@ class Experience(models.Model):
     @property
     def is_ongoing(self):
         return self.ended_at is None
+
+    starred_by = models.ManyToManyField(User, related_name="starred_experiences", blank=True)
 
 class Education(models.Model):
     DEGREE_CHOICES = [
