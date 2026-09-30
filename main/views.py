@@ -7,9 +7,11 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from django.core import serializers
-from django.http import HttpResponse, HttpResponseForbidden
+from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
 from main.models import Experience, Education
 from main.forms import EducationForm, ExperienceForm
+from django.views.decorators.http import require_POST
+from django.utils.html import strip_tags
 
 load_dotenv()
 SECRET_KEY = os.getenv("PORTFOLIO_SECRET_KEY")
@@ -73,28 +75,44 @@ def logout_user(request):
 
 def show_education(request):
     search_query = request.GET.get("search", "").strip()
-    education_list = Education.objects.all()
-    
-    if search_query:
-        education_list = education_list.filter(institution__icontains=search_query)
 
     context = {
         "name": "Ilman Ghani Awliya",
-        "education_list": education_list,
         "search_query": search_query,
         "is_editor": is_editor(request.user),
+        "form": EducationForm(),
     }
     return render(request, "education.html", context)
 
 
 def get_education_json(request):
     search_query = request.GET.get("search", "").strip()
-    education_list = Education.objects.all()
+    education_list = Education.objects.prefetch_related('starred_by').all()
+    
     if search_query:
         education_list = education_list.filter(institution__icontains=search_query)
-    
-    education_json = serializers.serialize("json", education_list)
-    return HttpResponse(education_json, content_type="application/json")
+        
+    data = []
+    for item in education_list:
+        starred_users = item.starred_by.all()
+        is_starred = request.user in starred_users if request.user.is_authenticated else False
+        starred_by_names = ", ".join([u.username for u in starred_users])
+        
+        data.append({
+            "pk": str(item.id),
+            "fields": {
+                "title": item.title,
+                "institution": item.institution,
+                "description": item.description,
+                "start_year": item.start_year,
+                "end_year": item.end_year,
+                "star_count": starred_users.count(),
+                "is_starred": is_starred,
+                "starred_by_names": starred_by_names,
+            }
+        })
+        
+    return JsonResponse(data, safe=False)
 
 
 @login_required(login_url="/login/")
@@ -284,3 +302,31 @@ def toggle_star_experience(request, experience_id):
             experience.starred_by.add(request.user)
         return redirect("main:show_experience")
     return HttpResponseForbidden("Method not allowed.")
+
+@require_POST
+def create_education_ajax(request):
+    if not request.user.is_superuser:
+        return JsonResponse({"status": "error", "message": "Unauthorized"}, status=403)
+
+    data = request.POST.copy()
+    
+    if "institution" in data:
+        data["institution"] = strip_tags(data["institution"])
+    if "description" in data:
+        data["description"] = strip_tags(data["description"])
+    if "field_of_study" in data:
+        data["field_of_study"] = strip_tags(data["field_of_study"])
+
+    form = EducationForm(data)
+    if form.is_valid():
+        education = form.save()
+        return JsonResponse({
+            "status": "success",
+            "message": "Data pendidikan berhasil ditambahkan!",
+            "data": {
+                "id": str(education.id),
+                "institution": education.institution,
+            }
+        }, status=201)
+
+    return JsonResponse({"status": "error", "errors": form.errors}, status=400)
