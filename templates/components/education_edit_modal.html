@@ -1,0 +1,28 @@
+<dialog id="edit-education-modal" popover>
+    <div class="modal-content" style="padding: 1.5rem; max-width: 500px; margin: auto; background: var(--bg-card, #fff); border-radius: 8px;">
+        <h2>Edit Education</h2>
+        <form id="edit-education-form">
+            <input type="hidden" id="edit-education-id" name="id">
+            
+            <div style="margin-bottom: 1rem;">
+                <label for="edit-institution" style="display: block; font-weight: bold; margin-bottom: 0.25rem;">Institusi</label>
+                <input type="text" id="edit-institution" name="institution" required style="width: 100%; padding: 0.5rem; border-radius: 4px; border: 1px solid #ccc;">
+            </div>
+
+            <div style="margin-bottom: 1rem;">
+                <label for="edit-field-of-study" style="display: block; font-weight: bold; margin-bottom: 0.25rem;">Program Studi</label>
+                <input type="text" id="edit-field-of-study" name="field_of_study" style="width: 100%; padding: 0.5rem; border-radius: 4px; border: 1px solid #ccc;">
+            </div>
+
+            <div style="margin-bottom: 1rem;">
+                <label for="edit-description" style="display: block; font-weight: bold; margin-bottom: 0.25rem;">Deskripsi</label>
+                <textarea id="edit-description" name="description" rows="3" style="width: 100%; padding: 0.5rem; border-radius: 4px; border: 1px solid #ccc;"></textarea>
+            </div>
+
+            <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+                <button type="button" class="button button-secondary" onclick="document.getElementById('edit-education-modal').hidePopover()">Batal</button>
+                <button type="submit" class="button">Simpan Perubahan</button>
+            </div>
+        </form>
+    </div>
+</dialog>

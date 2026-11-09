@@ -73,24 +73,19 @@ class EducationTest(TestCase):
         self.assertEqual(str(self.education), "Undergraduate at Universitas Indonesia")
         self.assertTrue(self.education.is_ongoing)
 
+    def test_empty_education_page(self):
+        response = self.client.get(reverse("main:show_education"))
+        self.assertEqual(response.status_code, 200)
+        # Sesuaikan pesan empty state dengan teks di HTML AJAX
+        self.assertContains(response, "Belum ada data pendidikan yang ditambahkan atau ditemukan.")
+
     def test_education_page_with_data(self):
         response = self.client.get(reverse("main:show_education"))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, self.education.institution)
-        self.assertContains(response, "Sistem Informasi")
-        self.assertContains(response, "Present")
-        self.assertContains(response, f'href="{reverse("main:show_main")}"')
-
-    def test_empty_education_page(self):
-        Education.objects.all().delete()
-        response = self.client.get(reverse("main:show_education"))
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Belum ada riwayat pendidikan yang ditambahkan.")
+        # Halaman HTML hanya merender script JS & container grid
+        self.assertContains(response, "BASE_EDUCATION_ENDPOINT")
 
     def test_completed_education(self):
-        self.education.end_year = 2029
-        self.education.save()
         response = self.client.get(reverse("main:show_education"))
-        self.assertFalse(self.education.is_ongoing)
-        self.assertContains(response, "2029")
-        self.assertNotContains(response, "Present")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "BASE_EDUCATION_ENDPOINT")

@@ -11,18 +11,19 @@ class EducationSerializer(serializers.ModelSerializer):
         model = Education
         fields = [
             "id", "institution", "field_of_study", "description",
+            "start_year", "end_year", "is_ongoing",  
             "star_count", "is_starred", "starred_by_names",
         ]
-        read_only_fields = ["id"]
+        read_only_fields = ["id", "star_count", "is_starred", "starred_by_names"]
 
     def validate_institution(self, value):
         value = strip_tags(value).strip()
         if not value:
-            raise serializers.ValidationError("Institution cannot be empty.")
+            raise serializers.ValidationError("Institution tidak boleh kosong.")
         return value
 
     def validate_field_of_study(self, value):
-        return strip_tags(value)
+        return strip_tags(value).strip()
 
     def validate_description(self, value):
         return strip_tags(value)

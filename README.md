@@ -114,3 +114,34 @@ Latihan Branch
     1. Diskusi konsep client-side dynamic rendering, penanganan asynchronous JavaScript, teknik debouncing pada input pencarian.
     2. Konsultasi struktur logika pembuatan endpoint JSON, penyusunan fungsi sanitasi `strip_tags` pada method `clean_<field>` di `forms.py`, serta integrasi `escapeHtml` di JavaScript.
     3. Seluruh penulisan kode di `views.py`, `forms.py`, `urls.py`, pembuatan komponen Modal & Toast, pengujian proteksi XSS secara mandiri, hingga proses commit dan push ke repositori GitHub dikerjakan sepenuhnya secara manual oleh penyusun.
+
+### Assignment 6
+
+1. Arti REST dan Perbedaan PUT vs PATCH:
+   - REST (Representational State Transfer) adalah arsitektur antarmuka web berbasis standar HTTP di mana data dikelola sebagai resource yang diakses melalui URL unik dan dimanipulasi menggunakan HTTP methods standar (`GET`, `POST`, `PUT`, `PATCH`, `DELETE`).
+   - Mengembalikan respon berformat JSON saja belum menjadikan API tersebut RESTful jika penamaan URL masih menyertakan kata kerja aksi (misalnya `/add-education/`) atau tidak memanfaatkan HTTP methods dan status code secara semantik.
+   - Perbedaan PUT dan PATCH:
+     - `PUT`: Digunakan untuk memperbarui seluruh data resource secara total (membutuhkan seluruh field model).
+     - `PATCH`: Digunakan untuk memperbarui sebagian field data resource (partial update).
+
+2. Peran Serializer di DRF:
+   - Serializer mengonversi objek kompleks Django Model menjadi tipe data Python murni/JSON (serialization) serta memvalidasi data masukan dari client sebelum disimpan ke database (deserialization).
+   - Dibandingkan penyusunan dictionary manual via `JsonResponse`, Serializer menyediakan validasi input terpusat (`validate_<field>`), sanitasi XSS bawaan via `strip_tags`, serta mengamankan field *read-only* (seperti `id` dan `star_count`) secara otomatis.
+
+3. Autentikasi vs Otorisasi & Pentingnya Server-Side Permission:
+   - Autentikasi (Authentication): Memverifikasi identitas pengguna (siapa yang sedang mengakses sistem).
+   - Otorisasi (Authorization): Memeriksa hak akses pengguna yang terautentikasi (aksi apa yang boleh dilakukan oleh role pengguna tersebut).
+   - Pengecekan hak akses wajib dilakukan di sisi server (Permission Class) karena menyembunyikan tombol di template HTML hanya menyembunyikan elemen visual UI, tetapi tidak mencegah pengguna nakal yang menembak request HTTP langsung via cURL, Postman, atau DevTools Console.
+
+4. Kebutuhan CSRF Token pada Session Authentication & Keterbatasan `force_authenticate`:
+   - Saat menggunakan `SessionAuthentication`, browser secara otomatis menyertakan cookie session pengguna pada setiap request. Tanpa token CSRF, aplikasi rentan terhadap serangan CSRF (Cross-Site Request Forgery) di mana situs jahat dapat memicu aksi mutasi atas nama pengguna.
+   - Pengujian dengan `force_authenticate` pada tes DRF hanya mensimulasikan identitas pengguna tanpa melewati CSRF middleware, sehingga kita membutuhkan pengujian terpisah menggunakan `APIClient(enforce_csrf_checks=True)` dan `.login()` untuk menguji keandalan proteksi CSRF di lingkungan nyata.
+
+### AI Disclosure (Assignment 6)
+- Tools Used: Google Gemini
+- Prompt Strategy: Menggunakan AI sebagai media diskusi dan konsultasi mandiri untuk memahami konsep REST API dengan Django REST Framework (DRF), perancangan ModelSerializer, penerapan role-based access control melalui custom Permission Class, penanganan request asynchronous via Fetch API (termasuk HTTP method PATCH dan DELETE), proteksi CSRF pada SessionAuthentication, serta perancangan unit test komprehensif menggunakan APITestCase.
+- Assisted Parts:
+    1. Diskusi konsep RESTful API, perbedaan `PUT` vs `PATCH`, peran Serializer dibanding `JsonResponse`, beda autentikasi vs otorisasi, serta alasan pentingnya proteksi CSRF pada SessionAuthentication untuk pengisian jawaban pertanyaan reflektif.
+    2. Konsultasi struktur logika pembagian hak akses 4 role pada `permissions.py`, penyusunan `EducationSerializer` dengan computed read-only fields dan validasi `strip_tags`, perancangan API Views di `api_views.py`, serta integrasi modal Edit (PATCH) dan Toast notification pada `education.html`.
+    3. Analisis dan pemecahan masalah (troubleshooting) saat testing, seperti penanganan `IntegrityError` (NOT NULL constraint pada `start_year`), isolasi masalah `staticfiles` manifest error WhiteNoise, serta perbaikan argumen sintaks pada test runner terminal.
+    4. Seluruh eksekusi kodingan, penyesuaian model, pengujian manual di browser, eksekusi unit test `python manage.py test main`, pengabaian berkas `staticfiles` pada `.gitignore`, hingga proses commit dan push ke repositori GitHub dan PWS dikerjakan secara mandiri oleh penyusun.

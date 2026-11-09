@@ -63,6 +63,10 @@
 {% include "components/education_form_modal.html" %}
 {% endif %}
 
+{% if user.is_superuser or is_editor %}
+{% include "components/education_edit_modal.html" %}
+{% endif %}
+
 {% csrf_token %}
 <script>
 const BASE_EDUCATION_ENDPOINT = "{% url 'api:education-list' %}";
@@ -84,6 +88,8 @@ const gridContainer = document.getElementById('grid');
 const searchForm = document.getElementById('education-search-form');
 const searchInput = document.getElementById('search-input');
 const educationForm = document.getElementById('education-form');
+const editForm = document.getElementById('edit-education-form');
+const editModal = document.getElementById('edit-education-modal');
 
 function getCookie(name) {
     const prefix = `${name}=`;
@@ -122,7 +128,12 @@ function buildEducationCardElement(education) {
     const articleElement = document.createElement('article');
     articleElement.className = 'experience-card';
 
-    const starText = education.is_starred ? `Unstar (${education.star_count})` : `Star (${education.star_count})`;
+    const yearText = education.start_year 
+        ? `${escapeHtml(education.start_year)} - ${education.is_ongoing ? 'Present' : escapeHtml(education.end_year || '')}` 
+        : '';
+    const yearSpan = yearText ? `<span class="experience-category">${yearText}</span>` : '';
+
+    const starText = education.is_starred ? `★ Unstar (${education.star_count})` : `☆ Star (${education.star_count})`;
     const starButtonHtml = IS_AUTHENTICATED
         ? `<button type="button" class="button button-secondary button-star${education.is_starred ? ' is-starred' : ''}" data-action="star" data-id="${escapeHtml(education.id)}" title="${escapeHtml(education.starred_by_names || '')}" style="padding: 0.3rem 0.6rem; font-size: 0.85rem;">${starText}</button>`
         : `<a href="{% url 'main:login' %}" class="button button-secondary" style="padding: 0.3rem 0.6rem; font-size: 0.85rem; text-decoration: none;">Login to star (${education.star_count})</a>`;
@@ -136,12 +147,18 @@ function buildEducationCardElement(education) {
             `;
         }
 
-        const updateUrl = "{% url 'main:update_education' '00000000-0000-0000-0000-000000000000' %}".replace('00000000-0000-0000-0000-000000000000', education.id);
-
         actionsHtml = `
             <div class="project-card-actions" style="margin-top: 1rem;">
                 <div class="project-actions" style="display: flex; gap: 0.5rem; align-items: center;">
-                    <a href="${updateUrl}" class="button button-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.9rem;">Edit</a>
+                    <button type="button" class="button button-secondary" data-action="edit" 
+                            data-id="${escapeHtml(education.id)}" 
+                            data-institution="${escapeHtml(education.institution)}" 
+                            data-field="${escapeHtml(education.field_of_study || '')}" 
+                            data-desc="${escapeHtml(education.description || '')}"
+                            data-start="${escapeHtml(education.start_year || '')}"
+                            data-end="${escapeHtml(education.end_year || '')}"
+                            data-ongoing="${education.is_ongoing ? 'true' : 'false'}"
+                            style="padding: 0.4rem 0.8rem; font-size: 0.9rem;">Edit</button>
                     ${deleteBtnHtml}
                 </div>
             </div>
@@ -151,6 +168,7 @@ function buildEducationCardElement(education) {
     const descriptionHtml = education.description ? `<p class="experience-description">${escapeHtml(education.description)}</p>` : '';
 
     articleElement.innerHTML = `
+        ${yearSpan}
         <h2>${escapeHtml(education.institution)}</h2>
         <p style="font-weight: bold; margin-bottom: 0.5rem;">
             ${escapeHtml(education.field_of_study || '')}
@@ -241,14 +259,13 @@ if (searchForm) {
 if (educationForm) {
     educationForm.addEventListener('submit', async function(e) {
         e.preventDefault();
-
         const submitBtn = educationForm.querySelector('button[type="submit"]');
         if (submitBtn) submitBtn.disabled = true;
 
         try {
             const fields = new FormData(educationForm);
             const payload = Object.fromEntries(
-                ['institution', 'field_of_study', 'description']
+                ['institution', 'field_of_study', 'description', 'start_year', 'end_year', 'is_ongoing']
                 .map(name => [name, fields.get(name)])
             );
 
@@ -263,7 +280,43 @@ if (educationForm) {
         } catch (error) {
             console.error('Error submitting form:', error);
             if (typeof showToast === 'function') {
-                showToast('Gagal', error.message, 'error');
+                showToast('Gagal Simpan Data', error.message, 'error');
+            }
+        } finally {
+            if (submitBtn) submitBtn.disabled = false;
+        }
+    });
+}
+
+if (editForm) {
+    editForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const submitBtn = editForm.querySelector('button[type="submit"]');
+        if (submitBtn) submitBtn.disabled = true;
+
+        const id = document.getElementById('edit-education-id').value;
+        const targetUrl = educationEndpoint(DETAIL_EDUCATION_ENDPOINT, id);
+
+        const payload = {
+            institution: document.getElementById('edit-institution').value,
+            field_of_study: document.getElementById('edit-field-of-study').value,
+            description: document.getElementById('edit-description').value,
+        };
+
+        const startEl = document.getElementById('edit-start-year');
+        if (startEl && startEl.value) payload.start_year = startEl.value;
+
+        try {
+            await writeEducation(targetUrl, 'PATCH', payload);
+            if (editModal && editModal.matches(':popover-open')) editModal.hidePopover();
+            if (typeof showToast === 'function') {
+                showToast('Berhasil!', 'Data pendidikan berhasil diperbarui.', 'success');
+            }
+            await fetchEducation(searchInput ? searchInput.value.trim() : '');
+        } catch (error) {
+            console.error('Error updating data:', error);
+            if (typeof showToast === 'function') {
+                showToast('Gagal Mengubah Data', error.message, 'error');
             }
         } finally {
             if (submitBtn) submitBtn.disabled = false;
@@ -277,6 +330,17 @@ if (gridContainer) {
         if (!button || button.disabled) return;
 
         const action = button.dataset.action;
+
+        if (action === 'edit') {
+            document.getElementById('edit-education-id').value = button.dataset.id;
+            document.getElementById('edit-institution').value = button.dataset.institution;
+            document.getElementById('edit-field-of-study').value = button.dataset.field;
+            document.getElementById('edit-description').value = button.dataset.desc;
+            const startEl = document.getElementById('edit-start-year');
+            if (startEl) startEl.value = button.dataset.start || '';
+            if (editModal) editModal.showPopover();
+            return;
+        }
 
         if (action === 'delete' && !window.confirm('Apakah Anda yakin ingin menghapus data pendidikan ini?')) {
             return;

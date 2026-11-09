@@ -14,9 +14,9 @@ from main.serializers import EducationSerializer
 def education_list(request):
     if request.method in ("GET", "HEAD"):
         educations = Education.objects.prefetch_related("starred_by").order_by("institution", "id")
-        title = request.query_params.get("title", "").strip()
-        if title:
-            educations = educations.filter(institution__icontains=title)
+        search_query = request.query_params.get("title", "").strip() or request.query_params.get("search", "").strip()
+        if search_query:
+            educations = educations.filter(institution__icontains=search_query)
         serializer = EducationSerializer(educations, many=True, context={"request": request})
         return Response(serializer.data)
 
